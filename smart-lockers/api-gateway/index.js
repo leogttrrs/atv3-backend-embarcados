@@ -1,4 +1,3 @@
-// api-gateway/index.js
 const express = require('express');
 const axios = require('axios');
 const app = express();
@@ -11,7 +10,6 @@ const SERVICES = {
     logs: 'http://localhost:3004'
 };
 
-// Função genérica para repassar a requisição REST
 const proxyRequest = async (req, res, serviceUrl) => {
     try {
         const response = await axios({
@@ -29,7 +27,6 @@ const proxyRequest = async (req, res, serviceUrl) => {
     }
 };
 
-// Roteamento
 app.use('/lockers', (req, res) => proxyRequest(req, res, SERVICES.lockers));
 app.use('/condominos', (req, res) => proxyRequest(req, res, SERVICES.condominos));
 app.use('/entregas', (req, res) => proxyRequest(req, res, SERVICES.entregas));
