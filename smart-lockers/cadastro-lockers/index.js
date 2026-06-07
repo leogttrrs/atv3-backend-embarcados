@@ -1,4 +1,5 @@
 const express = require('express');
+const axios = require('axios')
 const sqlite3 = require('sqlite3').verbose();
 const app = express();
 app.use(express.json());
@@ -60,17 +61,6 @@ app.put('/lockers/:id', (req, res) => {
     );
 });
 
-app.delete('/lockers/:id', (req, res) => {
-    const id = req.params.id;
-
-    db.run("DELETE FROM lockers WHERE id = ?", [id], function(err) {
-        if (err) return res.status(500).json({ error: err.message });
-        if (this.changes === 0) return res.status(404).json({ error: "Locker não encontrado" });
-
-        res.json({ message: "Locker removido com sucesso!" });
-    });
-});
-
 app.post('/lockers/:id/compartimentos', (req, res) => {
     const locker_id = req.params.id;
 
@@ -125,6 +115,7 @@ app.delete('/lockers/compartimentos/:id', async (req, res) => {
             res.json({ message: "Compartimento removido com sucesso!" });
         });
     } catch (error) {
+        console.error("Erro:", error.message);
         res.status(500).json({ error: "Erro de comunicação com o serviço de entregas." });
     }
 });
