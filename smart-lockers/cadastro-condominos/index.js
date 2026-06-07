@@ -66,15 +66,30 @@ app.put('/condominos/:id', (req, res) => {
     );
 });
 
-app.delete('/condominos/:id', (req, res) => {
+app.delete('/condominos/:id', async (req, res) => {
     const id = req.params.id;
 
-    db.run("DELETE FROM condominos WHERE id = ?", [id], function(err) {
-        if (err) return res.status(500).json({ error: err.message });
-        if (this.changes === 0) return res.status(404).json({ error: "Condômino não encontrado" });
+    try {
+        const response = await axios.get(`http://localhost:3003/entregas/condomino/${id}`);
 
-        res.json({ message: "Condômino removido com sucesso!" });
-    });
+        const temEncomendaPendente = response.data.some(entrega => entrega.status === 'DISPONIVEL');
+
+        if (temEncomendaPendente) {
+            return res.status(400).json({
+                error: "Operação negada. Não é possível excluir um condômino que possui encomendas aguardando retirada no locker."
+            });
+        }
+
+        db.run("DELETE FROM condominos WHERE id = ?", [id], function(err) {
+            if (err) return res.status(500).json({ error: err.message });
+            if (this.changes === 0) return res.status(404).json({ error: "Condômino não encontrado." });
+
+            res.json({ message: "Condômino removido com sucesso!" });
+        });
+    } catch (error) {
+        console.error("Erro na comunicação com o serviço de entregas:", error.message);
+        res.status(500).json({ error: "Erro de comunicação ao tentar validar as pendências do condômino." });
+    }
 });
 
 app.listen(3002, () => console.log('Cadastro de Condôminos rodando na porta 3002'));
