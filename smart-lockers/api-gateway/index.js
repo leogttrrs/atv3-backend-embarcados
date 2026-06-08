@@ -30,6 +30,11 @@ const proxyRequest = async (req, res, serviceUrl) => {
 app.use('/lockers', (req, res) => proxyRequest(req, res, SERVICES.lockers));
 app.use('/condominos', (req, res) => proxyRequest(req, res, SERVICES.condominos));
 app.use('/entregas', (req, res) => proxyRequest(req, res, SERVICES.entregas));
-app.use('/logs', (req, res) => proxyRequest(req, res, SERVICES.logs));
+app.use('/logs', (req, res) => {
+    if (req.method !== 'GET') {
+        return res.status(403).json({ error: "Acesso negado. Logs são gerados automaticamente pelo sistema e não podem ser alterados." });
+    }
+    proxyRequest(req, res, SERVICES.logs);
+});
 
 app.listen(3000, () => console.log('API Gateway rodando na porta 3000'));

@@ -6,7 +6,7 @@ app.post('/abrir', (req, res) => {
     const { locker_id, compartimento_id, acao } = req.body;
     
     console.log(`\n=========================================`);
-    console.log(`[HARDWARE SIMULADO] Acionando relé...`);
+    console.log(`[HARDWARE SIMULADO]`);
     console.log(`Locker ID: ${locker_id}`);
     console.log(`Compartimento ID: ${compartimento_id}`);
     console.log(`Ação: ${acao}`);
